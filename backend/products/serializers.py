@@ -3,8 +3,9 @@ from .models import Product
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    my_discount = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
-        my_discount = serializers.SerializerMethodField(read_only=True)
         model = Product
         fields = [
             'title',
@@ -12,8 +13,12 @@ class ProductSerializer(serializers.ModelSerializer):
             'price',
             'sale_price',
             'get_discount',
-            #'my_discount',
+            'my_discount',
         ]
 
     def get_my_discount(self, obj):
+        if not hasattr(obj, 'id'):
+            return None
+        if not isinstance(obj, Product):
+            return None
         return obj.get_discount()
